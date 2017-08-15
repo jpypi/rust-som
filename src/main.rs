@@ -5,10 +5,10 @@ use rand::distributions::{IndependentSample, Range};
 
 const MAP_DIM: usize  = 32;
 const MAP_RADIUS: f32 = (MAP_DIM as f32) / 2.0;
-const N_ITERS: u32    = 10000 + 1;
+const N_ITERS: u32    = 2000 + 1;
 const SIGMA_0: f32    = MAP_RADIUS;
-const LAMBDA: f32     = 3606.7;//N_ITERS as f32 / MAP_RADIUS.ln();
-const LEARN_0: f32    = 0.01;
+const LAMBDA: f32     = 600.0;//N_ITERS as f32 / MAP_RADIUS.ln();
+const LEARN_0: f32    = 0.1;
 
 #[derive(Debug)]
 #[derive(Copy)]
@@ -90,27 +90,29 @@ fn neighborhood(t: u32) -> f32 {
 }
 
 fn learnrate(t: u32) -> f32 {
-    LEARN_0 * (-(t as f32) / LAMBDA).exp()
+    LEARN_0 * (-(t as f32) / N_ITERS as f32).exp()
 }
 
 fn impact(impact_range: f32, dist: f32) -> f32 {
-    (- dist.powf(2.0) / 2.0*impact_range.powf(2.0)).exp()
+    (- dist.powf(2.0) / (2.0 * impact_range.powf(2.0))).exp()
 }
-
 
 fn update(point: (usize, usize),
           input: &Node,
           t: u32,
           lattice: &mut [[Node;MAP_DIM];MAP_DIM]) {
+
+    let impact_range = neighborhood(t);
+    let learn_rate   = learnrate(t);
+
     for r in 0..MAP_DIM {
         for c in 0..MAP_DIM {
             let dist = (((r as i32 - point.0 as i32).pow(2) +
                          (c as i32 - point.1 as i32).pow(2)) as f32).sqrt();
-            let impact_range = neighborhood(t);
             let node = &mut lattice[r][c];
             if dist < impact_range {
                 *node = node.add(&input.sub(node)
-                                 .mul(learnrate(t))
+                                 .mul(learn_rate)
                                  .mul(impact(impact_range, dist))
                                  );
             }
@@ -160,14 +162,15 @@ fn main() {
     init(&mut arr, &mut rng);
 
     let samples = vec![
-        Node(0.0,0.0,0.0),
         Node(1.0,0.0,0.0),
         Node(0.0,1.0,0.0),
         Node(0.0,0.0,1.0),
         Node(1.0,1.0,0.0),
         Node(1.0,0.0,1.0),
         Node(0.0,1.0,1.0),
-        Node(1.0,1.0,1.0),
+        Node(0.5,0.0,0.0),
+        Node(0.5,0.5,0.0),
+        Node(1.0,0.647,0.0),
     ];
 
     let samples_range = Range::new(0, samples.len() as u32);
