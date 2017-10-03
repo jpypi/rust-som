@@ -3,5 +3,13 @@ name = "som"
 version = "0.1.0"
 authors = ["James Jenkins <applesmacs@yahoo.com>"]
 
+[[bin]]
+name="som_render_example"
+path="src/main.rs"
+
 [dependencies]
 rand = "0.3.14"
+piston = "0.32.0"
+piston2d-graphics = "0.21.0"
+pistoncore-glutin_window = "0.37.0"
+piston2d-opengl_graphics = "0.44.0"
