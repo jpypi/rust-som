@@ -92,8 +92,10 @@ fn main() {
             "Kohonen Self Organizing Map",
             [MAP_DIM as u32 * SCALE, MAP_DIM as u32 * SCALE]
         )
-        .opengl(opengl) .exit_on_esc(true)
-        .build() .unwrap();
+        .graphics_api(opengl)
+        .exit_on_esc(true)
+        .build()
+        .unwrap();
 
     // Create a new game and run it
     let mut app = App {
